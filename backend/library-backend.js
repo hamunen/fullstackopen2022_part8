@@ -108,13 +108,21 @@ const typeDefs = `
   type Author {
     name: String!
     bookCount: Int!
+    born: Int
   }
 
   type Query {
     bookCount: Int!
     authorCount: Int!
-    allBooks(author: String): [Book!]
+    allBooks(author: String, genre: String): [Book!]
     allAuthors: [Author!]
+  }
+
+  type Mutation {
+    editAuthor(
+      name: String!
+      setBornTo: Int!
+    ): Author
   }
 `
 
@@ -122,9 +130,25 @@ const resolvers = {
   Query: {
     bookCount: () => books.length,
     authorCount: () => authors.length,
-    allBooks: (root, args) =>
-      args.author ? books.filter((b) => b.author === args.author) : books,
+    allBooks: (root, args) => {
+      let filtered = [...books]
+      if (args.author)
+        filtered = filtered.filter((b) => b.author === args.author)
+      if (args.genre)
+        filtered = filtered.filter((b) => b.genres.includes(args.genre))
+      return filtered
+    },
     allAuthors: () => authors,
+  },
+  Mutation: {
+    editAuthor: (root, args) => {
+      const author = authors.find((a) => a.name === args.name)
+      if (!author) return null
+
+      const updatedAuthor = { ...author, born: args.setBornTo }
+      authors = authors.map((a) => (a.name === args.name ? updatedAuthor : a))
+      return updatedAuthor
+    },
   },
   Author: {
     bookCount: (author) =>
