@@ -1,5 +1,6 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
+const { v1: uuid } = require('uuid')
 
 let authors = [
   {
@@ -93,10 +94,6 @@ let books = [
   },
 ]
 
-/*
-  you can remove the placeholder query once your first own has been implemented 
-*/
-
 const typeDefs = `
   type Book {
     title: String!
@@ -119,6 +116,12 @@ const typeDefs = `
   }
 
   type Mutation {
+    addBook(
+      title: String!
+      author: String!
+      published: Int!
+      genres: [String!]
+    ): Book
     editAuthor(
       name: String!
       setBornTo: Int!
@@ -141,6 +144,16 @@ const resolvers = {
     allAuthors: () => authors,
   },
   Mutation: {
+    addBook: (root, args) => {
+      const newBook = { ...args, id: uuid() }
+      books = books.concat(newBook)
+
+      if (!authors.find((a) => a.name === args.author)) {
+        authors = authors.concat({ name: args.author, id: uuid() })
+      }
+
+      return newBook
+    },
     editAuthor: (root, args) => {
       const author = authors.find((a) => a.name === args.name)
       if (!author) return null
