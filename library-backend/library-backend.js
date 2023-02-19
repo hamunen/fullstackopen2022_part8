@@ -63,17 +63,22 @@ const resolvers = {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
     allBooks: async (root, args) => {
-      const books = await Book.find({})
-      let filtered = [...books]
-      // TODO
-      /*if (args.author)
-        filtered = filtered.filter((b) => b.author === args.author)
-      if (args.genre)
-        filtered = filtered.filter((b) => b.genres.includes(args.genre))*/
+      var filter = {}
+      if (args.genre) filter = { ...filter, genres: args.genre }
+      if (args.author) {
+        const author = await Author.findOne({ name: args.author })
+        if (!author) {
+          throw new GraphQLError('Author not found', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.author,
+            },
+          })
+        }
+        filter = { ...filter, author: author._id }
+      }
 
-      // TODO: author field of a book
-
-      return filtered
+      return Book.find(filter).populate('author')
     },
     allAuthors: async () => Author.find({}),
   },
@@ -103,22 +108,28 @@ const resolvers = {
         })
       }
 
-      return newBook
+      return newBook.populate('author')
     },
-    // TODO
-    editAuthor: (root, args) => {
-      const author = authors.find((a) => a.name === args.name)
-      if (!author) return null
+    editAuthor: async (root, args) => {
+      const author = await Author.findOne({ name: args.name })
+      if (!author) {
+        throw new GraphQLError('Author not found', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.author,
+          },
+        })
+      }
 
-      const updatedAuthor = { ...author, born: args.setBornTo }
-      authors = authors.map((a) => (a.name === args.name ? updatedAuthor : a))
-      return updatedAuthor
+      author.born = args.setBornTo
+      return author.save()
     },
   },
-  // TODO
   Author: {
-    bookCount: (author) =>
-      books.filter((book) => book.author === author.name).length,
+    bookCount: async (author) => {
+      const authorObj = await Author.findOne({ name: author.name })
+      return Book.countDocuments({ author: authorObj._id })
+    },
   },
 }
 
