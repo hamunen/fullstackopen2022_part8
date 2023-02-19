@@ -1,11 +1,17 @@
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
+import LoginForm from './components/LoginForm'
 import { Routes, Route, Link } from 'react-router-dom'
 import { useState } from 'react'
+import { useApolloClient } from '@apollo/client'
+import { useNavigate } from 'react-router-dom'
 
 const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
+  const [token, setToken] = useState(null)
+  const client = useApolloClient()
+  const navigate = useNavigate()
 
   const padding = {
     padding: 5,
@@ -18,7 +24,14 @@ const App = () => {
     }, 10000)
   }
 
-  return (
+  const logout = () => {
+    setToken(null)
+    localStorage.clear()
+    client.resetStore()
+    navigate('/')
+  }
+
+  const navigation = (
     <div>
       <div>
         <Link style={padding} to='/authors'>
@@ -27,17 +40,40 @@ const App = () => {
         <Link style={padding} to='/books'>
           books
         </Link>
-        <Link style={padding} to='/add'>
-          add book
-        </Link>
+        {token && (
+          <>
+            <Link style={padding} to='/add'>
+              add book
+            </Link>
+            <button onClick={logout}>logout</button>
+          </>
+        )}
+        {!token && (
+          <Link style={padding} to='/login'>
+            login
+          </Link>
+        )}
       </div>
+    </div>
+  )
+
+  return (
+    <div>
+      {navigation}
       <Notify errorMessage={errorMessage} />
 
       <Routes>
         <Route path='/' element={<Authors />} />
-        <Route path='/authors' element={<Authors setError={notify} />} />
+        <Route
+          path='/authors'
+          element={<Authors setError={notify} isLoggedIn={!!token} />}
+        />
         <Route path='/books' element={<Books />} />
         <Route path='/add' element={<NewBook />} />
+        <Route
+          path='/login'
+          element={<LoginForm setError={notify} setToken={setToken} />}
+        />
       </Routes>
     </div>
   )

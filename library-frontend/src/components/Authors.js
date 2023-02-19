@@ -3,7 +3,7 @@ import { ALL_AUTHORS, EDIT_AUTHOR } from '../queries'
 import { useState } from 'react'
 import Select from 'react-select'
 
-const Authors = ({ setError }) => {
+const Authors = ({ setError, isLoggedIn }) => {
   const result = useQuery(ALL_AUTHORS)
 
   if (result.loading) {
@@ -30,7 +30,9 @@ const Authors = ({ setError }) => {
           ))}
         </tbody>
       </table>
-      <BirthYearForm authorNames={authors.map((a) => a.name)} setError />
+      {isLoggedIn && (
+        <BirthYearForm authorNames={authors.map((a) => a.name)} setError />
+      )}
     </div>
   )
 }
