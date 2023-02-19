@@ -98,7 +98,6 @@ const resolvers = {
       try {
         await newBook.save()
       } catch (error) {
-        console.log('hello')
         throw new GraphQLError('Saving book failed', {
           extensions: {
             code: 'BAD_USER_INPUT',
@@ -122,7 +121,18 @@ const resolvers = {
       }
 
       author.born = args.setBornTo
-      return author.save()
+      try {
+        await author.save()
+      } catch (error) {
+        throw new GraphQLError('Saving author failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.setBornTo,
+            error,
+          },
+        })
+      }
+      return author
     },
   },
   Author: {
