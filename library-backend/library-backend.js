@@ -95,10 +95,10 @@ const resolvers = {
       }
 
       const newBook = new Book({ ...args, author: author._id })
-
       try {
-        newBook.save()
+        await newBook.save()
       } catch (error) {
+        console.log('hello')
         throw new GraphQLError('Saving book failed', {
           extensions: {
             code: 'BAD_USER_INPUT',
