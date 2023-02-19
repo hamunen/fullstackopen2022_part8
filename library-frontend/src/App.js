@@ -63,13 +63,16 @@ const App = () => {
       <Notify errorMessage={errorMessage} />
 
       <Routes>
-        <Route path='/' element={<Authors />} />
+        <Route
+          path='/'
+          element={<Authors setError={notify} isLoggedIn={!!token} />}
+        />
         <Route
           path='/authors'
           element={<Authors setError={notify} isLoggedIn={!!token} />}
         />
         <Route path='/books' element={<Books />} />
-        <Route path='/add' element={<NewBook />} />
+        <Route path='/add' element={<NewBook setError={notify} />} />
         <Route
           path='/login'
           element={<LoginForm setError={notify} setToken={setToken} />}

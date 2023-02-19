@@ -40,7 +40,6 @@ const Authors = ({ setError, isLoggedIn }) => {
 const BirthYearForm = ({ authorNames, setError }) => {
   const [name, setName] = useState('')
   const [born, setBorn] = useState('')
-  const isValid = name !== '' && born !== ''
 
   const [editAuthor] = useMutation(EDIT_AUTHOR, {
     refetchQueries: [{ query: ALL_AUTHORS }],
@@ -55,6 +54,7 @@ const BirthYearForm = ({ authorNames, setError }) => {
 
   const options = authorNames.map((a) => ({ value: a, label: a }))
 
+  const isValid = name.length > 0 && born.length > 0
   const submit = async (event) => {
     event.preventDefault()
 
@@ -73,6 +73,7 @@ const BirthYearForm = ({ authorNames, setError }) => {
         <Select
           placeholder={'Select author'}
           options={options}
+          value={options.find((o) => o.value === name) || ''}
           onChange={(e) => setName(e.value)}
         />
         <div>
