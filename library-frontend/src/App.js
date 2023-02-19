@@ -6,6 +6,7 @@ import { Routes, Route, Link } from 'react-router-dom'
 import { useState } from 'react'
 import { useApolloClient } from '@apollo/client'
 import { useNavigate } from 'react-router-dom'
+import Recommend from './components/Recommend'
 
 const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
@@ -42,6 +43,9 @@ const App = () => {
         </Link>
         {token && (
           <>
+            <Link style={padding} to='/recommend'>
+              recommend
+            </Link>
             <Link style={padding} to='/add'>
               add book
             </Link>
@@ -72,6 +76,7 @@ const App = () => {
           element={<Authors setError={notify} isLoggedIn={!!token} />}
         />
         <Route path='/books' element={<Books />} />
+        <Route path='/recommend' element={<Recommend />} />
         <Route path='/add' element={<NewBook setError={notify} />} />
         <Route
           path='/login'
