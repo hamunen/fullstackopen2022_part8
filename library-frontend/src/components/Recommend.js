@@ -9,7 +9,7 @@ const Recommend = () => {
     return <div>loading...</div>
   }
 
-  if (!genreResult.me) {
+  if (!genreResult.data.me) {
     return <div>duh, please login to see recommendations</div>
   }
 
