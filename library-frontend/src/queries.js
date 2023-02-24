@@ -41,6 +41,19 @@ export const BOOKS_BY_GENRE = gql`
   }
 `
 
+export const RECOMMENDATIONS = gql`
+  query {
+    myRecommendations {
+      title
+      author {
+        name
+      }
+      published
+      genres
+    }
+  }
+`
+
 export const CURRENT_USER = gql`
   query getCurrentUser {
     me {

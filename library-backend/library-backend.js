@@ -54,6 +54,7 @@ const typeDefs = `
     allBooks(author: String, genre: String): [Book!]
     allAuthors: [Author!]
     me: User
+    myRecommendations: [Book!]
     allGenres: [String!]
   }
 
@@ -103,6 +104,11 @@ const resolvers = {
       }
 
       return Book.find(filter).populate('author')
+    },
+    myRecommendations: async (root, args, context) => {
+      if (!context.currentUser) return []
+      const genre = context.currentUser.favouriteGenre
+      return resolvers.Query.allBooks(root, { genre })
     },
     allAuthors: async () => Author.find({}),
     allGenres: async () => {
