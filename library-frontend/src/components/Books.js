@@ -5,28 +5,28 @@ import { useState } from 'react'
 
 const Books = () => {
   const result = useQuery(ALL_BOOKS)
-  const [selectedGenres, setSelectedGenres] = useState([])
+  const [selectedGenre, setSelectedGenres] = useState()
 
   if (result.loading) {
     return <div>loading books...</div>
   }
 
   const allBooks = result.data.allBooks
-  const filteredBooks =
-    selectedGenres.length === 0
-      ? allBooks
-      : allBooks.filter((b) => {
-          return b.genres.some((genre) => selectedGenres.includes(genre))
-        })
+  const filteredBooks = selectedGenre
+    ? allBooks.filter((b) => {
+        return b.genres.some((genre) => genre === selectedGenre)
+      })
+    : allBooks
 
   const genresSet = allBooks.reduce((acc, book) => {
     book.genres.forEach((genre) => acc.add(genre))
     return acc
   }, new Set())
   const genreOptions = [...genresSet].map((g) => ({ value: g, label: g }))
+  genreOptions.push({ value: undefined, label: 'All genres' })
 
-  const handleChange = (options) => {
-    setSelectedGenres(options.map((o) => o.value))
+  const handleChange = (selected) => {
+    setSelectedGenres(selected.value)
   }
 
   return (
@@ -35,7 +35,6 @@ const Books = () => {
       <div style={{ width: '600px' }}>
         <Select
           placeholder={'Filter by genre'}
-          isMulti
           options={genreOptions}
           onChange={handleChange}
         />
