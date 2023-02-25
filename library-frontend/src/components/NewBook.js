@@ -21,7 +21,7 @@ const NewBook = ({ setError }) => {
       { query: ALL_AUTHORS },
     ],
     onError: (error) => {
-      const errorMsg = error.graphQLErrors[0].message
+      const errorMsg = error.graphQLErrors[0].extensions?.error?.message
       setError(errorMsg)
     },
   })
