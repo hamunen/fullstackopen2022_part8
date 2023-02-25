@@ -20,14 +20,6 @@ export const ALL_AUTHORS = gql`
     }
   }
 `
-export const ALL_BOOKS = gql`
-  query getAllBooks {
-    allBooks {
-      ...BookDetails
-    }
-  }
-  ${BOOK_DETAILS}
-`
 
 export const ALL_GENRES = gql`
   query {

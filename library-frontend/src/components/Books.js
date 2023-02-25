@@ -1,18 +1,10 @@
-import { useQuery, useSubscription } from '@apollo/client'
-import { ALL_GENRES, BOOKS_BY_GENRE, BOOK_ADDED } from '../queries'
+import { useQuery } from '@apollo/client'
+import { ALL_GENRES, BOOKS_BY_GENRE } from '../queries'
 import Select from 'react-select'
 
 const Books = () => {
   const genreResult = useQuery(ALL_GENRES)
   const { loading, data, refetch } = useQuery(BOOKS_BY_GENRE)
-
-  useSubscription(BOOK_ADDED, {
-    onData: ({ data }) => {
-      console.log(data)
-      window.alert(`${data.data.bookAdded.title} added, cool!`)
-    }
-  })
-
 
   if (loading || genreResult.loading) {
     return <div>loading ...</div>
